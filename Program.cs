@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 namespace _49_Tic_Tac_Toe
 {
     class Player
-    { 
+    {
         public bool turn;
 
         public string mark;
 
-        //public string name;
-        
+        public bool victory = false;
+
+        public string name;
+
     }
 
     class Program
@@ -23,12 +25,12 @@ namespace _49_Tic_Tac_Toe
         public static Player Player1 = new Player();
         public static Player Player2 = new Player();
 
-        static void InitalizeGameBoard() 
+        static void InitalizeGameBoard()
         {
             for (int i = 0; i < gameBoardLength; i++)
             {
                 gameBoard[i] = (i + 1).ToString();
-            }    
+            }
         }
 
         /* Game Board
@@ -38,7 +40,7 @@ namespace _49_Tic_Tac_Toe
           ---------
           7 | 8 | 9
         */
-        static void PrintGameBoard() 
+        static void PrintGameBoard()
         {
             Console.WriteLine("     " + gameBoard[0] + " | " + gameBoard[1] + " | " + gameBoard[2]);
 
@@ -53,23 +55,58 @@ namespace _49_Tic_Tac_Toe
             Console.WriteLine();
         }
 
-        static void Introduction() 
+        static void Introduction()
         {
             Console.WriteLine("Welcome to Tic Tac Toe\n");
-            
+
             Console.Write("Press enter to play");
 
             Console.ReadLine();
         }
 
-        static bool hasWon() 
-        {
-            return false;
+        static bool gameBoardCheck(int first, int second, int third, Player player)
+        { 
+            if (gameBoard[first - 1] == player.mark && gameBoard[second - 1] == player.mark && gameBoard[third - 1] == player.mark)
+            { 
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
         }
 
-        static bool choiceValid(string choice) 
+        static bool whichPlayerWon(Player player) 
         {
-            if (Convert.ToInt32(choice) >= 1 && Convert.ToInt32(choice) <= 9) 
+            if (gameBoardCheck(1, 2, 3, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(4, 5, 6, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(7, 8, 9, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(1, 4, 7, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(2, 5, 8, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(3, 6, 9, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(1, 5, 9, player))
+            {
+                return true;
+            }
+            else if (gameBoardCheck(3, 5, 7, player))
             {
                 return true;
             }
@@ -79,26 +116,78 @@ namespace _49_Tic_Tac_Toe
             }
         }
 
-        static void invalidCellChoice() 
+        static bool hasWon()
+        {
+            if (whichPlayerWon(Player1))
+            { 
+                Player1.victory = true;
+                return true;
+            }
+            else if (whichPlayerWon(Player2))
+            { 
+                Player2.victory = true;
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        static bool choiceValid(string choice)
+        {
+            int choiceIntValue;
+
+            if (int.TryParse(choice, out choiceIntValue)) 
+            {
+                if (choiceIntValue >= 1 && choiceIntValue <= 9)
+                {
+                    if (gameBoard[choiceIntValue - 1] == "X" || gameBoard[choiceIntValue - 1] == "O")
+                    {
+                        return false;
+                    }
+                    else 
+                    { 
+                        return true;
+                    }
+                }
+                else 
+                {
+                    return false;    
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static void invalidCellChoice()
         {
             Console.WriteLine("Invalid choice, please try again\n");
         }
 
-        static void whoseTurn() 
+        static void whoseTurn()
         {
-            if (Player1.turn == true) 
-            { 
+            if (Player1.turn == true)
+            {
                 Console.WriteLine("Player 1 make your move\n");
             }
-            else if (Player2.turn == true) 
+            else if (Player2.turn == true)
             {
-                Console.WriteLine("Player 2 make your move\n");    
+                Console.WriteLine("Player 2 make your move\n");
             }
         }
 
-        static void changeGameBoard(Player player, int cell) 
+        static void changeGameBoard(Player player, int cell)
         {
-            gameBoard[cell] = player.mark; 
+            gameBoard[cell] = player.mark;
+        }
+
+        static void victoryStatement (Player player1, Player player2) 
+        { 
+            Console.WriteLine("Congratulations {0}, you have beaten {1} at the most skill intensive game in the world, Tic Tac Toe!\n", 
+                player1.name, player2.name);
         }
 
         static void Main(string[] args)
@@ -113,7 +202,7 @@ namespace _49_Tic_Tac_Toe
 
             string choice;
 
-            
+
 
             Player1.turn = true;
 
@@ -121,29 +210,43 @@ namespace _49_Tic_Tac_Toe
 
             Player2.mark = "O";
 
-
-            while (hasWon() == false) 
+            //Game Loop
+            while (hasWon() == false)
             {
                 Console.Clear();
                 whoseTurn();
                 PrintGameBoard();
                 choice = Console.ReadLine();
-                while (choiceValid(choice) == false) 
+
+                while (choiceValid(choice) == false)
                 {
                     Console.Clear();
                     invalidCellChoice();
                     PrintGameBoard();
                     choice = Console.ReadLine();
-
                 }
-                if (Player1.turn == true) 
+
+                if (Player1.turn == true)
                 {
                     changeGameBoard(Player1, (Convert.ToInt32(choice) - 1));
+                    Player1.turn = false;
+                    Player2.turn = true;
                 }
+
                 else if (Player2.turn == true)
                 {
-                    changeGameBoard(Player2, Convert.ToInt32(choice));
+                    changeGameBoard(Player2, (Convert.ToInt32(choice) - 1));
+                    Player2.turn = false;
+                    Player1.turn = true;
                 }
+            }
+            if (Player1.victory == true) 
+            {
+                Console.Clear();
+                victoryStatement(Player1, Player2);
+                PrintGameBoard();
+                Console.ReadKey();
+
             }
         }
     }
