@@ -57,26 +57,47 @@ namespace _49_Tic_Tac_Toe
 
         static void Introduction()
         {
+            Console.Title = "Tic Tac Toe";
+
             Console.WriteLine("Welcome to Tic Tac Toe\n");
 
-            Console.Write("Press enter to play");
+            Console.WriteLine("Please enter your names\n");
 
-            Console.ReadLine();
+            Console.Write("Player 1, Name: ");
+
+            Player1.name = Console.ReadLine();
+
+            Console.WriteLine();
+
+            Console.Write("Player 2, Name: ");
+
+            Player2.name = Console.ReadLine();
+
+            Console.Clear();
         }
 
         static bool gameBoardCheck(int first, int second, int third, Player player)
-        { 
+        {
             if (gameBoard[first - 1] == player.mark && gameBoard[second - 1] == player.mark && gameBoard[third - 1] == player.mark)
-            { 
+            {
                 return true;
             }
-            else 
+            else
             {
                 return false;
             }
         }
 
-        static bool whichPlayerWon(Player player) 
+        static void initializePlayers() 
+        {
+            Player1.turn = true;
+
+            Player1.mark = "X";
+
+            Player2.mark = "O";
+        }
+
+        static bool whichPlayerWon(Player player)
         {
             if (gameBoardCheck(1, 2, 3, player))
             {
@@ -110,6 +131,32 @@ namespace _49_Tic_Tac_Toe
             {
                 return true;
             }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool ifXorO(int arrayCount, Player player1, Player player2) 
+        {
+            if ((gameBoard[arrayCount - 1] == player1.mark) || (gameBoard[arrayCount - 1] == player2.mark))
+            {
+                return true;    
+            }
+            else
+            { 
+                return false;
+            }
+        }
+
+        static bool hasTie() 
+        {
+            if (ifXorO(1, Player1, Player2) && ifXorO(2, Player1, Player2) && ifXorO(3, Player1, Player2)
+                 && ifXorO(4, Player1, Player2) && ifXorO(5, Player1, Player2) && ifXorO(6, Player1, Player2)
+                  && ifXorO(7, Player1, Player2) && ifXorO(8, Player1, Player2) && ifXorO(9, Player1, Player2)) 
+            {
+                return true;
+            }
             else 
             {
                 return false;
@@ -119,16 +166,20 @@ namespace _49_Tic_Tac_Toe
         static bool hasWon()
         {
             if (whichPlayerWon(Player1))
-            { 
+            {
                 Player1.victory = true;
                 return true;
             }
             else if (whichPlayerWon(Player2))
-            { 
+            {
                 Player2.victory = true;
                 return true;
             }
-            else 
+            else if (hasTie() == true)
+            {
+                return true;
+            }
+            else
             {
                 return false;
             }
@@ -138,7 +189,7 @@ namespace _49_Tic_Tac_Toe
         {
             int choiceIntValue;
 
-            if (int.TryParse(choice, out choiceIntValue)) 
+            if (int.TryParse(choice, out choiceIntValue))
             {
                 if (choiceIntValue >= 1 && choiceIntValue <= 9)
                 {
@@ -146,14 +197,14 @@ namespace _49_Tic_Tac_Toe
                     {
                         return false;
                     }
-                    else 
-                    { 
+                    else
+                    {
                         return true;
                     }
                 }
-                else 
+                else
                 {
-                    return false;    
+                    return false;
                 }
             }
             else
@@ -171,11 +222,11 @@ namespace _49_Tic_Tac_Toe
         {
             if (Player1.turn == true)
             {
-                Console.WriteLine("Player 1 make your move\n");
+                Console.WriteLine("{0} make your move\n", Player1.name);
             }
             else if (Player2.turn == true)
             {
-                Console.WriteLine("Player 2 make your move\n");
+                Console.WriteLine("{0} make your move\n", Player2.name);
             }
         }
 
@@ -184,31 +235,21 @@ namespace _49_Tic_Tac_Toe
             gameBoard[cell] = player.mark;
         }
 
-        static void victoryStatement (Player player1, Player player2) 
-        { 
-            Console.WriteLine("Congratulations {0}, you have beaten {1} at the most skill intensive game in the world, Tic Tac Toe!\n", 
+        static void victoryStatement(Player player1, Player player2)
+        {
+            Console.WriteLine("Congratulations {0}, you have beaten {1} at the most skill intensive game in the world, Tic Tac Toe!\n",
                 player1.name, player2.name);
         }
 
         static void Main(string[] args)
         {
-            Console.Title = "Tic Tac Toe";
-
             Introduction();
-
-            Console.Clear();
 
             InitalizeGameBoard();
 
-            string choice;
+            initializePlayers();
 
-
-
-            Player1.turn = true;
-
-            Player1.mark = "X";
-
-            Player2.mark = "O";
+            string choice = "";
 
             //Game Loop
             while (hasWon() == false)
@@ -240,13 +281,27 @@ namespace _49_Tic_Tac_Toe
                     Player1.turn = true;
                 }
             }
-            if (Player1.victory == true) 
+
+            if (Player1.victory == true)
             {
                 Console.Clear();
                 victoryStatement(Player1, Player2);
                 PrintGameBoard();
                 Console.ReadKey();
-
+            }
+            else if (Player2.victory == true)
+            {
+                Console.Clear();
+                victoryStatement(Player2, Player1);
+                PrintGameBoard();
+                Console.ReadKey();
+            }
+            else if (Player1.victory == false && Player2.victory == false) 
+            {
+                Console.Clear();
+                Console.WriteLine("You two are equals in the dastardly complex game, Tic Tac Toe\n");
+                PrintGameBoard();
+                Console.ReadKey();
             }
         }
     }
